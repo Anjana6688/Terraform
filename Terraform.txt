@@ -1,0 +1,403 @@
+Date: 29/05/2026:
+Notes A:
+========
+ What is Terraform?
+ If we want to run an application we need to deploy it in server...
+ We can deploy it an any cloud services aws,azure,gcp,physical on premises..
+ So for that in your company if they used aws and then you have developed multipe automated scripts on the aws.
+ If they changed the cloud services azure or onpremise or anyother we need to change automated process and for 
+ aws we need to know AWS cloud formation template(CFT).for azure we need to know Azure Resource Manager(rm) repeating for all...
+ In few companies they use hybrid cloud Services.so we need to learn multiple tools to overcome this "Terraform" came to picture.
+   -> Terraform mainly works on "API as code" which is developed by Harshicorp.
+   -> If we learn one Tool called Terraform we can  work on any Infrastructure(maintance of an application,deployment creation .
+   -> Terraform calls the API of any cloud services with the Terrafom script files what cloud services you defined in it.   
+   -> Using APi we can programtically talk to any application.Suppose Github,instead of manually authentication every time in UI
+      in terminal by using curl/https request so we can talk to the API and get the results.
+   -> So developer must be know the API language to avoid that Terraform will converts your request in terraform file and send the 
+      API request to application and send back the request to us.This concept "API as code".
+Why we need to use Terrafom?
+
+
+/***************************Session-29***************************************/
+Date: 29/05/2026 
+Why not Ansible is used for Infra?
+
+Ansible can create infra, but it can't manage/update infra because of no state management feature available.
+ansible originally created for configuration management not good for infra management..
+-> Use terraform for infra creation, once servers are created by terraform handover them to ansible,
+   ansible completes configuration in the server.
+CM -> Configuration as a code
+CRUD
+Creation of configuration
+Reading the configuration
+Update the configuration
+Delete the configuration
+
+Terraform: Terraform is an open-source Infrastructure as a Code (IaC) tool created by HashiCorp,HCL -> Hashicorp configuration language.
+
+Advantages of IaC:
+==================
+Version control ( if we check history of code then we can find who did changes everything is in version).
+Automatic CRUD
+Consistent infra -> DEV, QA, UAT, PRE-PROD, PERF, PROD
+Inventory -> What are the services we are using in cloud
+Cost optimisation ( As a code we can manage everything easily creation and deletion of instances).
+Time saving and no human errors
+Dependency -> SG, EC2 and then R53
+Modular reusable infra
+Terraform is for infrastructure management for infrastructure we don't need server.So we are using AWS and terraform will connect via providers
+Terraform setup:
+================
+Terraform is for infra,so we don't need a server for that which means you just write terraform code in VS Code,and push to gitHub.
+To apply the terraform code we use AWS Account,to link/interact the terraform with AWS we use ""AWS Providers"".
+Before Apply we need aws autentication(aws configure).
+AWS Authentication.
+==================
+1.Need to install terraform.
+2.Need to install aws CLI v2.
+  1. use this link o install aws cli https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+  2. you can check the satus in git bash by aws --version.
+     voice@Anjana MINGW64 ~
+     $ aws --version
+     aws-cli/2.35.9 Python/3.14.5 Windows/11 exe/AMD64
+Terraform install:
+=================
+1.use link to download https://developer.hashicorp.com/terraform/install
+2.Then extract all the zip folder and then terraform.exe we need to put that in specific folder so that we need to inform 
+environment varaible and give the path of that exe,so that windows will check terraform related commands in that environment variables.
+so copy the path in environmentvariables in windows and click on path variable and add your variable.
+
+Provider:
+=========
+To Know the terraform by which provider we are going to connect we need to create on provider.tf file and mention provider details.
+
+COMMANDS:
+----------
+terraform init -> downloads the provider, intialise terraform
+terraform plan -> It will give us a plan that what it is going to do
+terraform apply -> creates the infra as given in the plan
+terraform apply -auto-approve
+terraform destroy -auto-approve
+
+These commands we need to execute in git bash also under directories which consists .tf file.
+you can find the code in https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance
+
+Create EC2 using Terraform:
+==========================
+Resources:
+----------
+A resource block defines components of your infrastructure. 
+The example configuration defines a resource block to create an AWS EC2 instance.
+
+resource "aws_instance" "app_server" {
+  ami           = "ami-0220d79f3f480ecf5"
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "learn-terraform"
+  }
+}
+Syntax:
+=======
+{
+key ="value"
+}
+
+resource "type_of_resource" "name-of-resource" {
+	
+	key = value
+	
+}
+Date: 29/05/2026
+Terraform instatllation:
+======================
+Where the .tf files present we need to install terraform there for that we need to use "terraform init" in git bash.
+after initialiazion and  use "terraform plan" which will show the the plan to create EC2.
+If you are okay with the plan you can apply using "terraform aplly".
+we can use "terraform apply -auto-approve" it will auto approve it no need to give yes.
+Date: 01/07/2026
+----------------
+Security groups create for ec2 using terraform.
+-----------------------------------
+resource "aws_security_group" "example" {
+  name   = "sg"
+
+  ingress = []
+  egress  = []
+}
+egress is outgoing traffic means allowing the traffic.
+ingress is incoming traffic .
+refernce: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group
+
+Association security group with EC2.
+---------------------------------
+if you create an EC2 "aws_instance" that has a vpc_security_group_ids argument that refers to an "aws_security_group" resource,
+the "aws_security_group" is a dependent of the "aws_instance". Because of this,
+ Terraform will create the security group first so that it can then be associated with the EC2 instance.
+ 
+vpc_security_group_ids its list becoz one or more than security group can add to the instance.
+if you create an instance then this follwing are outputs.
+
+This resource exports the following attributes in addition to the arguments above:
+
+arn - ARN of the security group.
+id - ID of the security group.
+owner_id - Owner ID.
+tags_all - A map of tags assigned to the resource, including those inherited from the provider default_tags configuration block.
+ 
+form above all we pick id.from that we wrote here  vpc_security_group_ids = [aws_security_group.Allow-all-sg.id]
+Session-30
+==========
+04/07/2026
+gitignore:
+=========
+Though the terraform files(terraform provider)  sizes are more while pushing to git it will be dont possible
+so we are using git ignore it must be saved as .gitignore where the terraform initalised.
+
+where we get gitignore file??
+In google search with gitignore terraform file will get that.
+
+what if gitignore file won't there ??
+added into staging area
+commited to local repository
+but rejected from central repo
+
+rm -rf .git
+add .gitignore
+git init
+git branch -M main
+git remote add origin <URL>
+git add . ; git commit ; git push
+
+
+
+Variables:
+==============
+Syntax for vailable:
+
+variable "variable_name" {
+	default = "value-of-variable"
+}
+
+If you neeed to call the variable use var.variable_name
+Note: Variable names should be anything our wish but when we give resource name thats should be as in terraform 
+
+We have written sample code for creating ec2 and security groups reference from terraform doc.
+Also variable priority like 
+1. command line variable values have first prefernce
+2. terraform.tfvars (this we need to give same file no changes to be done.
+3. env variable TF_VAR_<variable_name>
+4. default value
+5. finally prompt
+
+which means if you define an existing variable in cmd it will take the value from command line.
+you can check with terraform doc for cmd line.
+
+Conditions:
+============
+Condition-syintax condition ? true_value : false_value
+
+in variable.tf i have defined as variable 
+variable "environment" {
+    default = "dev"
+}
+then i have added a condition in ec2.tf like
+    instance_type = var.environment == "dev" ? "t3.micro" : "t3.medium" 
+then the variable i have defined as dev so after i have applied the terraform plan then then i can get the t3.micro instance as that is the true conditon.
+
+terraform Plan -Output 
+instance_state                       = (known after apply)
+      + instance_type                        = "t3.micro"
+ Loops
+==========================================================
+count:
+======
+In Terraform there count word which will represents a loop and create multiple environments..
+wheneverwe use count it will give special variable count.index.
+It works with List more frequently.
+SO i have created three instances with different names for that i have done
+i have created a variable.tf
+variable "instances" {
+    default = [ "Mongodb", "Reddis", "Mysql" ]
+}
+and in loop.tf
+tags = {
+        Name = var.instances[count.index]
+        Terraform = "true"
+    }
+
+I have added the count.index which means when index is 0 then it will create Mongodb. viseversa forother index as well.
+DATE: 05-11-2025
+Till now we have created a three instances for that now we are creating records.
+for that we are using this code https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record
+aws route53 records.
+In route 53.tf we have combined two variables.
+name    = "var.instances[count.index].var.domain"
+we have combined two variables this concept calls Interpolation.
+Interpolation/concatination:
+===========================
+To do concatination of variables we use use ${variable}
+name    = "${var.instances[count.index]}.${var.domain}"
+
+/*******Session -30 -completed in this sessioon we have create loop,records and instances using that loop.***/
+How to check the output iof resource???
+We can give awsintance.terraform in output.tf file when we give terrafom apply command it will show the output
+which(awsintance.terraform) means type_of_resource.name_of_resource.
+FOR-LOOP:
+=========
+       Count basedd loop are used to itterates list,where as for loops are used for map.
+	   List consists "string values"
+	   Map consists "Key and values"[suppose if you define front-end ="ip-address" here front-end is KEY and ip-address is VALUE]
+	   The for_each meta-argument accepts a map or a set of strings and creates an instance for each item in that map or set.
+	   Map always consists key value pairs.
+	  syntax for map:
+	  -------------
+	      {
+		     key = value
+			 key2=value2
+		   }
+		   
+	      key = value,this entire entry is taken as one each statement so each.key and each.value it will consider whenever for_each itterates.
+		  if we want to declare multiple values we use list but to use it in for_each we need to convert it to string by using  toset() and tomap() or we can use Map.
+		  By using we are converting the list so map need key-value so we are converting the below list to map 
+           		  variable "instances" {
+					default = {
+        mongodb="t3.micro"
+        redis="t3.micro"
+        mysql="t2.micro"
+
+    }
+}
+
+     here terraform sample code from docs
+	 resource "azurerm_resource_group" "rg" {
+  for_each = tomap({
+    a_group       = "eastus"
+    another_group = "westus2"
+  })
+  name     = each.key
+  location = each.value
+}
+
+Our modified code 
+
+resource "aws_instance" "terraform" {
+    ami = "ami-09c813fb71547fc4f"
+	for_each =var.instances
+    instance_type = "t3.micro"
+    vpc_security_group_ids = [aws_security_group.allow_all.id]
+    tags = {
+        Name = "terraform-1"
+        Terraform = "true"
+    }
+}
+NOTE: count is suitable for itterae list we will get count.index
+for_each is good for map we will get eack.key and each.value
+if u want to irrerate list through for_each then we can use
+for_each = toset(list) we ned to call it via each.value
+
+Data Sources:
+==============
+  We can query the existing information in the provider using data sources.
+  Suppose if we give any hardcoded values in tf files if any changes in infrastructure then it will be difficult to 
+  and if terraform run the files it will fail because in background the existing hardcoded values are changed.
+  To avoid this terraform has data sources it will dynamically fetch the information.
+ How Data Sources Work:
+  A data source is declared using a data block, followed by the provider name, the type of data to retrieve,
+  and a local name you assign for referencing it within your configuration.
+    These attributes can be referenced elsewhere in your Terraform configuration using the syntax data.<PROVIDER>_<TYPE>.<NAME>.<ATTRIBUTE>.
+	By using data sources even if any backround changes done it will dynamically pick those changes no need to update manually.
+	 if you want to see the output you can check the output using output in terraform.
+	 output "ami_id" {
+    value = data.aws_ami.joindevops.id
+	the above line will give the full info about existing ami .
+	TIP: Data will give the data of existing resource where as resource will create the data.
+	ex for resource:
+	----------------
+	resource "aws_instance" "terraform" {
+#   for_each =var.instances
+#     ami = data.aws_ami.joindevops.id  # data.<PROVIDER>_<TYPE>.<NAME>.<ATTRIBUTE>.
+#     instance_type = each.value
+#     vpc_security_group_ids = [aws_security_group.allow_all.id]
+#     tags = {
+#         Name = each.key
+#         Terraform = "true"
+#     }
+# }  
+ example for Data:
+ ----------------
+ data "aws_ami" "joindevops" {
+    owners           = ["973714476881"]
+    most_recent      = true
+    }
+
+functions:
+==========
+ Terraform functions are inbuilt we need to use the existing function no possibility to create new functions.
+ length:
+ most of the case if we want to create 2 number of instance in resource we will define the count =2 in furture if we want to increate the length
+ instead we can use length(var.instance)
+ refer link for functions:https://developer.hashicorp.com/terraform/language/functions
+ $ terraform console
+> max(12, 54, 3)
+54
+> join("-", ["foo", "bar", "baz"])
+"foo-bar-baz"
+>
+
+ Merge function:
+ -------------
+ it will merge the two Maps.
+ while merging maps if any new values that should be create and if it is already existing that will replace with new Map Values.
+ 
+ State **********Imp Concept*******
+ ==================================
+ The responsibility of terraform is whatever we have given in .tf files it should be created. 
+ wich means we are declaring that to create infra..
+ How terraform will know that if instance is already created?
+ Terraform is stores in state file,it will uses this file to track whether the given input is created or need to be created.
+ 
+ 1.  .tf files--> This we are giving our expected/declared input
+ 2.Actual infra --> existing or real infra 
+ 3.state --> for comparision terraform creates.
+ 
+ Scenarios:1
+ ===========
+ No state file means there is no infra terraform will create infra
+ and for tracking it will create .tfstate file.
+ scenarion2:
+ ===========
+ If you are running same tf file again then terraform will refresh 
+ aws_security_group.allow_all: Refreshing state...
+ it will compare actual infra vs state file
+nothing to change
+Scenario 3:
+===========
+Mnaually deleting the instance in console
+if you give terraform Plan...
+Refressibg statee....in this refressing process terraform will validate the tfstate file and our provider have same inputs if it is not there it will  modify the
+terraform tfstate file accordingly after apply/plan.
+
+scenario 4:
+===========
+
+Changed some thing in tf files(our input)
+In that terraform will validate whether .tf file is matching with actual infra if not matches and then again chnage accordingly in .tfstate file.
+
+Terraform state definition:
+============================
+Terraform state is used to match the desired infra to match the actual infra,
+when create,read,update and delete the infra terraform uses this state file to acheive 
+the desired infra for comparision. It is like memory to terraform
+ 
+ Resource Mapping: It stores the bindings between resources declared in your configuration and the actual objects in the remote system (e.g., an AWS EC2 instance, an Azure Virtual Machine).
+ 
+ NOTE: Terraform locks the state file when terraform is running.
+
+/******************************* SESSION :32********************************/
+13/11/2025:
+
+
+
+
+
