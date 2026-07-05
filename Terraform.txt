@@ -156,7 +156,6 @@ so we are using git ignore it must be saved as .gitignore where the terraform in
 
 where we get gitignore file??
 In google search with gitignore terraform file will get that.
-
 what if gitignore file won't there ??
 added into staging area
 commited to local repository
@@ -169,24 +168,41 @@ git branch -M main
 git remote add origin <URL>
 git add . ; git commit ; git push
 
-
-
+05/07/2026
 Variables:
 ==============
+1.Creating Varaible folder would be readble also terraform will read all the terraform file and execute it so differentfolders will be better.
+2.always copy provider file.
+
 Syntax for vailable:
+===================
+Earlier in EC2 file we directly defined variable now we are assigning variables by defining variables in variable.tf files.
 
 variable "variable_name" {
 	default = "value-of-variable"
 }
-
 If you neeed to call the variable use var.variable_name
 Note: Variable names should be anything our wish but when we give resource name thats should be as in terraform 
+Data Types:
+===========
+variable "instance_tags" {
+type = map(string)
+default = {
+Environment = "dev"
+Owner = "team-a"
+}
+}
+We have defined varibale with default but always default will not work some times, we need our desired values for that we can give
+variables in either cmd/tfvras/env var
 
 We have written sample code for creating ec2 and security groups reference from terraform doc.
 Also variable priority like 
 1. command line variable values have first prefernce
-2. terraform.tfvars (this we need to give same file no changes to be done.
-3. env variable TF_VAR_<variable_name>
+ex: terraform plan -var "instance_type=t3.small"
+2. terraform.tfvars (this we need to give same file no changes to be done.)
+3. env variable TF_VAR_<variable_name> (environment varaible ie,. while session is going)
+export TF_VAR_instance_type="t3.large"
+to unset export variable unset TF_VAR_instance_type
 4. default value
 5. finally prompt
 
@@ -239,7 +255,10 @@ Interpolation/concatination:
 To do concatination of variables we use use ${variable}
 name    = "${var.instances[count.index]}.${var.domain}"
 
-/*******Session -30 -completed in this sessioon we have create loop,records and instances using that loop.***/
+/*******Day-30 -completed in this sessioon we have create loop,records and instances using that loop.***/
+=============================================================================================================
+
+
 How to check the output iof resource???
 We can give awsintance.terraform in output.tf file when we give terrafom apply command it will show the output
 which(awsintance.terraform) means type_of_resource.name_of_resource.
