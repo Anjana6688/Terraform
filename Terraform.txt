@@ -376,12 +376,13 @@ We can query the existing information in the provider using data sources.
     most_recent      = true
     }
 
+also review git/vs
 functions:
 ==========
  Terraform functions are inbuilt we need to use the existing function no possibility to create new functions.
  length:
- most of the case if we want to create 2 number of instance in resource we will define the count =2 in furture if we want to increate the length
- instead we can use length(var.instance)
+ most of the case if we want to create 2 number of instance in resource we will define the count =2 in furture 
+ if we want to increate the length instead of count=4 mentioned that we can use length(var.instance)
  refer link for functions:https://developer.hashicorp.com/terraform/language/functions
  $ terraform console
 > max(12, 54, 3)
@@ -392,8 +393,31 @@ functions:
 
  Merge function:
  -------------
- it will merge the two Maps.
+It will merge the two Maps.
  while merging maps if any new values that should be create and if it is already existing that will replace with new Map Values.
+ merge function
+
+{
+	a = b
+	c = d
+	x = y
+},
+
+{
+	a = b
+	c = e
+}
+
+a = b
+c = e
+x = y
+
+merge({a="b", c="d"}, {e="f", c="z"})
+
+a = b
+c = z
+e = f
+
  
  State **********Imp Concept*******
  ==================================
@@ -403,7 +427,7 @@ functions:
  Terraform is stores in state file,it will uses this file to track whether the given input is created or need to be created.
  
  1.  .tf files--> This we are giving our expected/declared input
- 2.Actual infra --> existing or real infra 
+ 2.Actual infra --> existing or real infra(might be aws)
  3.state --> for comparision terraform creates.
  
  Scenarios:1
@@ -420,7 +444,7 @@ Scenario 3:
 ===========
 Mnaually deleting the instance in console
 if you give terraform Plan...
-Refressibg statee....in this refressing process terraform will validate the tfstate file and our provider have same inputs if it is not there it will  modify the
+Refressibg state....in this refressing process terraform will validate the tfstate file and our provider have same inputs if it is not there it will  modify the
 terraform tfstate file accordingly after apply/plan.
 
 scenario 4:
@@ -435,15 +459,77 @@ Terraform state is used to match the desired infra to match the actual infra,
 when create,read,update and delete the infra terraform uses this state file to acheive 
 the desired infra for comparision. It is like memory to terraform
  
- Resource Mapping: It stores the bindings between resources declared in your configuration and the actual objects in the remote system (e.g., an AWS EC2 instance, an Azure Virtual Machine).
+ Resource Mapping: It stores the bindings between resources declared in your configuration 
+ and the actual objects in the remote system (e.g., an AWS EC2 instance, an Azure Virtual Machine).
  
  NOTE: Terraform locks the state file when terraform is running.
+ 
+ ##########################
+Day -32 				  #
+Date: 11th July2026        #
+##########################
 
-/******************************* SESSION :32********************************/
-13/11/2025:
+Remote State:
+============
+Def:
+By default, Terraform stores state locally in a file named terraform.tfstate.
+When working with Terraform in a team, use of a local file makes Terraform usage complicated because each user must
+make sure they always have the latest state data before running Terraform and make sure that nobody 
+else runs Terraform at the same time.
+With remote state, Terraform writes the state data to a remote data store,
+which can then be shared between all members of a team.
+Terraform supports storing state in HCP Terraform, HashiCorp Consul, Amazon S3, Azure Blob Storage, Google Cloud Storage, Alibaba Cloud OSS, and more.
+
+
+State file is for terraform refernce,so ideally developers shouldn't touch the state file.
+we must keep state file in remote location while working in colloboration environment for security and preventing duplicate resources and errors when multiple members are working together
+1 person completed infra, state is in his local..
+2nd person want to do changes, he initialise terraform, he will plan and he will apply
+1. either duplicate resources
+2. error while creating resources saying that already exists
+state file should be locked when terraform is doing something, so that other person can't apply the changes.
+
+Loacls:
+======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 SUmmary:
 Data sources are mostly used in real-time projects.
+State 
 
 
