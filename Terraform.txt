@@ -146,9 +146,12 @@ owner_id - Owner ID.
 tags_all - A map of tags assigned to the resource, including those inherited from the provider default_tags configuration block.
  
 form above all we pick id.from that we wrote here  vpc_security_group_ids = [aws_security_group.Allow-all-sg.id]
-Session-30
-==========
-04/07/2026
+
+##########################
+Day -30					  #
+Date: 4th July2026        #
+##########################
+
 gitignore:
 =========
 Though the terraform files(terraform provider)  sizes are more while pushing to git it will be dont possible
@@ -170,12 +173,12 @@ git add . ; git commit ; git push
 
 05/07/2026
 Variables:
-==============
+----------
 1.Creating Varaible folder would be readble also terraform will read all the terraform file and execute it so differentfolders will be better.
 2.always copy provider file.
 
 Syntax for vailable:
-===================
+--------------------
 Earlier in EC2 file we directly defined variable now we are assigning variables by defining variables in variable.tf files.
 
 variable "variable_name" {
@@ -184,7 +187,7 @@ variable "variable_name" {
 If you neeed to call the variable use var.variable_name
 Note: Variable names should be anything our wish but when we give resource name thats should be as in terraform 
 Data Types:
-===========
+---------
 variable "instance_tags" {
 type = map(string)
 default = {
@@ -210,39 +213,46 @@ which means if you define an existing variable in cmd it will take the value fro
 you can check with terraform doc for cmd line.
 
 Conditions:
-============
+-----------
 Condition-syintax condition ? true_value : false_value
 
 in variable.tf i have defined as variable 
 variable "environment" {
     default = "dev"
 }
-then i have added a condition in ec2.tf like
+then i have added a condition in ec2.tf(condition folder) like
     instance_type = var.environment == "dev" ? "t3.micro" : "t3.medium" 
 then the variable i have defined as dev so after i have applied the terraform plan then then i can get the t3.micro instance as that is the true conditon.
-
-terraform Plan -Output 
-instance_state                       = (known after apply)
-      + instance_type                        = "t3.micro"
  Loops
-==========================================================
+======
 count:
 ======
-In Terraform there count word which will represents a loop and create multiple environments..
-wheneverwe use count it will give special variable count.index.
+In Terraform there is a count lopp which will represents a loop and create multiple environments..
+suppose to run an  aplpication if you want 10 Environments normal in aws UI you can give the number of environment number it will create.
+In Terraform we use count loop to create multiple instances.
+whenever we use count it will give special variable count.index.
+If you give 11 environments the terraform will loop like below
+count.index -> special variable
+count = 10
+count.index -> 0
+count.index -> 1
+count.index -> 9
+
 It works with List more frequently.
 SO i have created three instances with different names for that i have done
-i have created a variable.tf
+i have created a variable.tf 
+count=4
 variable "instances" {
     default = [ "Mongodb", "Reddis", "Mysql" ]
 }
-and in loop.tf
+and in ec2.tf
 tags = {
         Name = var.instances[count.index]
         Terraform = "true"
     }
 
 I have added the count.index which means when index is 0 then it will create Mongodb. viseversa forother index as well.
+
 DATE: 05-11-2025
 Till now we have created a three instances for that now we are creating records.
 for that we are using this code https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record
@@ -252,31 +262,34 @@ name    = "var.instances[count.index].var.domain"
 we have combined two variables this concept calls Interpolation.
 Interpolation/concatination:
 ===========================
-To do concatination of variables we use use ${variable}
+To do concatination of variables we use use "${variable}.${variable}"
 name    = "${var.instances[count.index]}.${var.domain}"
+To create route 53 record we need records = [aws_eip.lb.public_ip] to get the ip-address.
+we will execute output.tf ref document:instances outout in terraform
 
-/*******Day-30 -completed in this sessioon we have create loop,records and instances using that loop.***/
-=============================================================================================================
 
+##########################
+Day -31					  #
+Date: 5th July2026        #
+##########################
 
-How to check the output iof resource???
-We can give awsintance.terraform in output.tf file when we give terrafom apply command it will show the output
-which(awsintance.terraform) means type_of_resource.name_of_resource.
 FOR-LOOP:
 =========
-       Count basedd loop are used to itterates list,where as for loops are used for map.
-	   List consists "string values"
+       Count based loop are used to iterates list,where as for loops are used for map.
+	   List consists "string values" ex: default = ["mongodb","mysql","redis","rabitmq"]
 	   Map consists "Key and values"[suppose if you define front-end ="ip-address" here front-end is KEY and ip-address is VALUE]
-	   The for_each meta-argument accepts a map or a set of strings and creates an instance for each item in that map or set.
-	   Map always consists key value pairs.
-	  syntax for map:
-	  -------------
+	   syntax for map:
+	  ------------
 	      {
 		     key = value
 			 key2=value2
 		   }
 		   
-	      key = value,this entire entry is taken as one each statement so each.key and each.value it will consider whenever for_each itterates.
+	   The for_each meta-argument accepts a map or a set of strings and creates an instance for each item in that map or set.
+	   Map always consists key value pairs.
+	  
+		   
+	      (key = value)this entire entry is taken as "one each statement"so each.key and each.value it will consider whenever for_each itterates.
 		  if we want to declare multiple values we use list but to use it in for_each we need to convert it to string by using  toset() and tomap() or we can use Map.
 		  By using we are converting the list so map need key-value so we are converting the below list to map 
            		  variable "instances" {
@@ -315,12 +328,25 @@ for_each is good for map we will get eack.key and each.value
 if u want to irrerate list through for_each then we can use
 for_each = toset(list) we ned to call it via each.value
 
+map we can use if any difference values so we can define individually, if its common we can use list.
+
+if we have list use count ,for loop key value pair
+count -> list -> count.index
+for_each -> map -> each.key and each.value
+
+Date: 11th July2026 
+------------------
+Till now we have used "resource" which will create the based on our input.
+Where as data source is used to fetch the existing data in any providers.
 Data Sources:
 ==============
-  We can query the existing information in the provider using data sources.
+We can query the existing information in the provider using data sources.
   Suppose if we give any hardcoded values in tf files if any changes in infrastructure then it will be difficult to 
   and if terraform run the files it will fail because in background the existing hardcoded values are changed.
-  To avoid this terraform has data sources it will dynamically fetch the information.
+  To avoid this terraform has data sources it will dynamically fetch the latest information.
+  Suppose in your project existing ami id changed and the earlier ami id is harcoded in your 
+  terraform codes then though the current and earlier is different id's terraform execution will fail.
+  not only ami vpc,to avoid this we will use Data_sorces it will dynamically fetch the latest data.
  How Data Sources Work:
   A data source is declared using a data block, followed by the provider name, the type of data to retrieve,
   and a local name you assign for referencing it within your configuration.
@@ -417,6 +443,7 @@ the desired infra for comparision. It is like memory to terraform
 13/11/2025:
 
 
-
+SUmmary:
+Data sources are mostly used in real-time projects.
 
 
